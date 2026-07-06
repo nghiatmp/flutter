@@ -27,6 +27,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isSubmitting = false;
 
   @override
+  void initState() {
+    super.initState();
+    _fillRegisteredAccount();
+  }
+
+  Future<void> _fillRegisteredAccount() async {
+    final user = await ref.read(authServiceProvider).getRegisteredUser();
+    if (!mounted || user == null) return;
+
+    _emailController.text = user.email;
+    _passwordController.text = user.password;
+  }
+
+  @override
   void dispose() {
     /// Dispose controller khi rời màn hình để giải phóng tài nguyên.
     _emailController.dispose();

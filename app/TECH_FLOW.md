@@ -787,4 +787,3 @@ Nếu lỗi chọn ảnh:
 2. Xem `PermissionService`.
 3. Kiểm tra Android/iOS permission config.
 4. Kiểm tra `image_picker`.
-

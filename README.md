@@ -1,17 +1,16 @@
-# study_flutter
+# Study Flutter Workspace
 
-A new Flutter project.
+Workspace này đang được tách thành 2 project riêng:
 
-## Getting Started
+```txt
+app/      -> Flutter mobile/web app
+backend/  -> NestJS API
+```
 
-This project is a starting point for a Flutter application.
+Tài liệu riêng của từng project:
 
-A few resources to get you started if this is your first Flutter project:
+- `app/PROJECT_STRUCTURE.md`
+- `app/TECH_FLOW.md`
+- `backend/PROJECT_STRUCTURE.md`
+- `backend/TECH_FLOW.md`
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
