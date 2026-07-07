@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import {
   createHmac,
   randomBytes,
@@ -8,8 +9,12 @@ import {
 
 @Injectable()
 export class CryptoService {
-  private readonly tokenSecret =
-    process.env.API_TOKEN_SECRET ?? "study-flutter-dev-secret";
+  private readonly tokenSecret: string;
+
+  constructor(config: ConfigService) {
+    this.tokenSecret =
+      config.get<string>("API_TOKEN_SECRET") ?? "study-flutter-dev-secret";
+  }
 
   hashPassword(password: string): string {
     const salt = randomBytes(16).toString("hex");

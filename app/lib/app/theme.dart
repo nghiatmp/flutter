@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
 
+/// Theme dùng chung cho toàn app.
+/// Hầu hết widget đọc style qua Theme.of(context) nên sửa ở đây sẽ áp dụng
+/// đồng loạt cho mọi màn hình, không cần sửa từng nơi.
 ThemeData buildAppTheme({Brightness brightness = Brightness.light}) {
   final isDark = brightness == Brightness.dark;
   const primary = Color(0xFFC7658A);
   const secondary = Color(0xFF86B7A8);
   const tertiary = Color(0xFF9A8BC4);
-  final surface = isDark ? const Color(0xFF211A1E) : const Color(0xFFFCFAF8);
+  final surface = isDark ? const Color(0xFF211A1E) : const Color(0xFFFBF6F3);
   final surfaceContainer = isDark
       ? const Color(0xFF33282E)
-      : const Color(0xFFF4F0EC);
-  final outline = isDark ? const Color(0xFF55444C) : const Color(0xFFE7DCD5);
-  final ink = isDark ? const Color(0xFFF8EDF2) : const Color(0xFF402A34);
+      : const Color(0xFFF4EEEA);
+  final outline = isDark ? const Color(0xFF55444C) : const Color(0xFFEAE0DB);
+  final ink = isDark ? const Color(0xFFF8EDF2) : const Color(0xFF3D2A32);
   final cardColor = isDark ? const Color(0xFF2B2227) : Colors.white;
+
+  /// Một scale bo góc duy nhất cho toàn app: phần tử càng lớn thì bo góc
+  /// càng rộng, tạo cảm giác mềm mại đồng bộ thay vì mỗi nơi một kiểu.
+  const radiusInput = 16.0;
+  const radiusButton = 18.0;
+  const radiusCard = 22.0;
 
   final colorScheme =
       ColorScheme.fromSeed(seedColor: primary, brightness: brightness).copyWith(
@@ -51,20 +60,24 @@ ThemeData buildAppTheme({Brightness brightness = Brightness.light}) {
     ),
     appBarTheme: AppBarTheme(
       elevation: 0,
-      scrolledUnderElevation: 0,
+      scrolledUnderElevation: 1,
       backgroundColor: surface,
+      surfaceTintColor: primary,
       foregroundColor: ink,
       titleTextStyle: TextStyle(
         color: ink,
         fontSize: 20,
-        fontWeight: FontWeight.w800,
+        fontWeight: FontWeight.w700,
       ),
       iconTheme: const IconThemeData(color: primary),
       actionsIconTheme: const IconThemeData(color: primary),
     ),
     navigationBarTheme: NavigationBarThemeData(
-      height: 72,
+      height: 74,
+      elevation: 3,
       backgroundColor: cardColor,
+      surfaceTintColor: cardColor,
+      shadowColor: primary.withValues(alpha: 0.14),
       indicatorColor: isDark
           ? const Color(0xFF61344A)
           : const Color(0xFFF3D7E3),
@@ -73,9 +86,9 @@ ThemeData buildAppTheme({Brightness brightness = Brightness.light}) {
         return TextStyle(
           color: isSelected
               ? primary
-              : (isDark ? const Color(0xFFBBA8B1) : const Color(0xFF6B7787)),
+              : (isDark ? const Color(0xFFBBA8B1) : const Color(0xFF8C7A83)),
           fontSize: 12,
-          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
         );
       }),
       iconTheme: WidgetStateProperty.resolveWith((states) {
@@ -83,25 +96,37 @@ ThemeData buildAppTheme({Brightness brightness = Brightness.light}) {
         return IconThemeData(
           color: isSelected
               ? primary
-              : (isDark ? const Color(0xFFBBA8B1) : const Color(0xFF8C6F7D)),
+              : (isDark ? const Color(0xFFBBA8B1) : const Color(0xFF9C8790)),
         );
       }),
     ),
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(radiusInput),
         borderSide: BorderSide(color: outline),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(radiusInput),
         borderSide: BorderSide(color: outline),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: primary, width: 1.6),
+        borderRadius: BorderRadius.circular(radiusInput),
+        borderSide: const BorderSide(color: primary, width: 1.8),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(radiusInput),
+        borderSide: BorderSide(color: colorScheme.error),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(radiusInput),
+        borderSide: BorderSide(color: colorScheme.error, width: 1.8),
       ),
       filled: true,
-      fillColor: cardColor,
+      fillColor: surfaceContainer,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 18,
+        vertical: 16,
+      ),
       prefixIconColor: primary,
       floatingLabelStyle: const TextStyle(
         color: primary,
@@ -112,9 +137,36 @@ ThemeData buildAppTheme({Brightness brightness = Brightness.light}) {
       style: ElevatedButton.styleFrom(
         backgroundColor: primary,
         foregroundColor: Colors.white,
-        minimumSize: const Size.fromHeight(48),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        textStyle: const TextStyle(fontWeight: FontWeight.w800),
+        minimumSize: const Size.fromHeight(52),
+        elevation: 1,
+        shadowColor: primary.withValues(alpha: 0.35),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusButton),
+        ),
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
+        ),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: primary,
+        minimumSize: const Size.fromHeight(52),
+        side: BorderSide(color: outline),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusButton),
+        ),
+        textStyle: const TextStyle(fontWeight: FontWeight.w700),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: primary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusButton),
+        ),
+        textStyle: const TextStyle(fontWeight: FontWeight.w700),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
@@ -134,20 +186,25 @@ ThemeData buildAppTheme({Brightness brightness = Brightness.light}) {
       }),
     ),
     cardTheme: CardThemeData(
-      elevation: 1,
-      shadowColor: primary.withValues(alpha: 0.10),
+      elevation: 2,
+      shadowColor: primary.withValues(alpha: 0.14),
       color: cardColor,
       surfaceTintColor: cardColor,
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: 6),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: outline),
+        borderRadius: BorderRadius.circular(radiusCard),
       ),
     ),
     dividerTheme: DividerThemeData(color: outline),
-    listTileTheme: const ListTileThemeData(
+    listTileTheme: ListTileThemeData(
       iconColor: primary,
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 18,
+        vertical: 10,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radiusCard),
+      ),
     ),
   );
 }

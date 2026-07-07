@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/localization/app_strings.dart';
 import '../../../core/utils/app_snackbar.dart';
 import '../../../core/utils/validators.dart';
@@ -65,10 +66,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
 
   Future<void> _fillRegisteredAccount() async {
     final user = await ref.read(authServiceProvider).getRegisteredUser();
-    if (!mounted || user == null) return;
+    if (!mounted) return;
 
-    _emailController.text = user.email;
-    _passwordController.text = user.password;
+    /// Nếu máy chưa từng đăng ký tài khoản nào, tự điền tài khoản demo
+    /// mà backend đã seed sẵn để người dùng đăng nhập thử ngay.
+    _emailController.text = user?.email ?? AppConstants.demoUserEmail;
+    _passwordController.text = user?.password ?? AppConstants.demoUserPassword;
   }
 
   @override
@@ -221,11 +224,17 @@ class _LoginHeader extends StatelessWidget {
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: colorScheme.outline),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.primary.withValues(alpha: 0.16),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
             ),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(16),
               child: Icon(
                 Icons.lock_open_rounded,
                 color: colorScheme.primary,

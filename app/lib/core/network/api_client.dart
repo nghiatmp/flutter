@@ -1,4 +1,6 @@
+import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../constants/app_constants.dart';
@@ -28,6 +30,31 @@ class ApiClient {
     /// responseBody để false để console không bị quá dài trong demo.
     dio.interceptors.add(
       LogInterceptor(requestBody: true, responseBody: false),
+    );
+
+    /// Chucker hiện nút nổi hình con bọ trên màn hình, bấm vào xem chi tiết
+    /// request/response ngay trong app. Chỉ bật ở debug để không lộ dữ liệu
+    /// khi build release.
+    if (kDebugMode) {
+      dio.interceptors.add(ChuckerDioInterceptor());
+    }
+
+    /// Backend bọc mọi response thành công trong envelope chuẩn
+    /// {success, statusCode, data, timestamp}. Unwrap ngay ở đây để
+    /// toàn bộ service/repository phía trên vẫn đọc response.data
+    /// như dữ liệu thô (List/Map), không phải sửa lại nơi gọi API.
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onResponse: (response, handler) {
+          final body = response.data;
+          if (body is Map<String, dynamic> &&
+              body['success'] == true &&
+              body.containsKey('data')) {
+            response.data = body['data'];
+          }
+          handler.next(response);
+        },
+      ),
     );
   }
 

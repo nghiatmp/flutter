@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../features/settings/providers/settings_provider.dart';
+import 'chucker_bug_button.dart';
 import 'router.dart';
 import 'theme.dart';
 
@@ -32,6 +34,17 @@ class StudyFlutterApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       routerConfig: router,
+
+      /// Nút nổi hình con bọ (Chucker) để xem lịch sử request/response
+      /// ngay trong app khi debug.
+      builder: kDebugMode
+          ? (context, child) => Stack(
+              children: [
+                Positioned.fill(child: child ?? const SizedBox.shrink()),
+                const ChuckerBugButton(),
+              ],
+            )
+          : null,
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:chucker_flutter/chucker_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,6 +21,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     initialLocation: '/',
+
+    /// MaterialApp.router không có navigatorKey riêng, nên phải gắn
+    /// ChuckerFlutter.navigatorKey vào GoRouter để Chucker mở được màn
+    /// inspector từ root navigator. Chỉ cần ở debug.
+    navigatorKey: kDebugMode ? ChuckerFlutter.navigatorKey : null,
     redirect: (context, state) {
       final path = state.uri.path;
       final isAuthPage = path == '/login' || path == '/register' || path == '/';

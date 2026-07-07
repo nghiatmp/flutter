@@ -14,6 +14,8 @@ class EmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -21,8 +23,21 @@ class EmptyView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             /// Icon giúp người dùng nhận biết đây là trạng thái trống chứ không phải lỗi.
-            Icon(icon, size: 44, color: Colors.grey.shade500),
-            const SizedBox(height: 12),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest,
+                shape: BoxShape.circle,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Icon(
+                  icon,
+                  size: 34,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
             Text(
               message,
               textAlign: TextAlign.center,

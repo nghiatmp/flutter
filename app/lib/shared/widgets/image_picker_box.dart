@@ -27,10 +27,6 @@ class ImagePickerBox extends StatelessWidget {
         imagePath == null ? emptyLabel : selectedLabel,
         overflow: TextOverflow.ellipsis,
       ),
-      style: OutlinedButton.styleFrom(
-        minimumSize: const Size.fromHeight(44),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
     );
   }
 }
