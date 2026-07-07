@@ -1,6 +1,6 @@
-# Cấu Trúc Project Flutter Demo
+# Cấu Trúc Project Flutter App
 
-File này mô tả cách project đang được chia thư mục và vai trò của từng phần. Mục tiêu là giúp bạn đọc code theo đúng hướng: phần app chung, phần core dùng lại, phần shared widget, sau đó mới tới từng feature.
+File này mô tả cấu trúc hiện tại của Flutter app sau khi tách workspace thành `app/` và `backend/`.
 
 ## Tổng Quan
 
@@ -16,23 +16,10 @@ lib/
 Ý nghĩa chính:
 
 - `main.dart`: điểm bắt đầu chạy app.
-- `app/`: cấu hình cấp ứng dụng như router, theme, app root.
-- `core/`: các service, helper, config dùng chung toàn app.
-- `shared/`: các widget tái sử dụng giữa nhiều màn hình.
-- `features/`: code nghiệp vụ theo từng chức năng lớn.
-
-## main.dart
-
-```txt
-lib/main.dart
-```
-
-Vai trò:
-
-- Khởi tạo Flutter binding.
-- Bọc app bằng `ProviderScope`.
-- `ProviderScope` là vùng chứa global state của Riverpod, tương tự `Provider` trong React Redux.
-- Chạy widget gốc `StudyFlutterApp`.
+- `app/`: cấu hình app root, router và theme.
+- `core/`: hằng số, network, storage, localization, permission, utils.
+- `shared/`: widget dùng chung.
+- `features/`: code theo từng chức năng lớn.
 
 ## app/
 
@@ -43,217 +30,96 @@ lib/app/
 └── theme.dart
 ```
 
-### app.dart
+- `app.dart`: tạo `MaterialApp.router`, gắn router, theme, dark theme, locale.
+- `router.dart`: cấu hình route bằng `go_router`.
+- `theme.dart`: theme sáng/tối dùng chung toàn app.
 
-File này chứa widget gốc `StudyFlutterApp`.
-
-Nhiệm vụ:
-
-- Tạo `MaterialApp.router`.
-- Gắn router từ `appRouterProvider`.
-- Gắn theme dùng chung.
-- Tắt debug banner.
-
-### router.dart
-
-File này cấu hình điều hướng bằng `go_router`.
-
-Các route hiện có:
+Route hiện có:
 
 ```txt
-/            -> SplashScreen
-/register    -> RegisterScreen
-/login       -> LoginScreen
-/management  -> ManagementScreen
+/                 -> SplashScreen
+/register         -> RegisterScreen
+/login            -> LoginScreen
+/login-success    -> LoginSuccessScreen
+/management       -> MainShellScreen
+/notifications    -> NotificationsScreen
+/create-post      -> CreatePostScreen
+/posts/create     -> CreatePostScreen
+/posts/:id        -> PostDetailScreen
+/account/profile  -> ProfileScreen
+/account/security -> AccountSecurityScreen
+/settings         -> SettingsScreen
+/settings/theme   -> ThemeSettingsScreen
+/settings/language -> LanguageSettingsScreen
+/settings/about   -> AboutScreen
 ```
 
-Router có logic redirect theo auth state:
+Sau đăng nhập, app vào `MainShellScreen` với bottom navigation:
 
-- App chưa đọc xong session thì ở `/`.
-- Đã đăng nhập thì vào `/management`.
-- Chưa đăng nhập thì vào `/register` hoặc `/login`.
-- Chưa đăng nhập mà mở `/management` thì bị đưa về `/login`.
-
-### theme.dart
-
-File này cấu hình giao diện chung:
-
-- `ColorScheme`
-- `InputDecorationTheme`
-- `ElevatedButtonTheme`
-- `CardTheme`
-- `scaffoldBackgroundColor`
-
-Khi muốn đổi style toàn app, ưu tiên sửa ở đây.
+```txt
+Home | Posts | Account
+```
 
 ## core/
 
 ```txt
 lib/core/
 ├── constants/
+├── localization/
 ├── network/
 ├── permissions/
 ├── storage/
 └── utils/
 ```
 
-`core` chứa các phần nền tảng dùng lại ở nhiều feature.
+- `constants/`: `AppConstants`, `StorageKeys`.
+- `localization/`: `appStringsProvider`, text tiếng Việt/English.
+- `network/`: `ApiClient`, `ApiEndpoints`, helper nhận diện lỗi mạng.
+- `permissions/`: xin quyền ảnh trước khi chọn ảnh.
+- `storage/`: wrapper cho `SharedPreferences`.
+- `utils/`: snackbar, validators.
 
-### core/constants/
-
-```txt
-lib/core/constants/
-├── app_constants.dart
-└── storage_keys.dart
-```
-
-Vai trò:
-
-- `app_constants.dart`: khai báo hằng số cấp app, ví dụ tên app.
-- `storage_keys.dart`: khai báo key dùng cho local storage.
-
-Các storage key hiện có:
+Storage key hiện có:
 
 ```txt
 user_data
 is_logged_in
-tasks_data
+access_token
+theme_mode
+language_code
 ```
-
-### core/network/
-
-```txt
-lib/core/network/
-├── api_client.dart
-└── api_endpoints.dart
-```
-
-Vai trò:
-
-- `api_client.dart`: cấu hình `Dio`, `baseUrl`, timeout, header, interceptor.
-- `api_endpoints.dart`: gom endpoint API vào một nơi.
-
-API base URL hiện tại:
-
-```txt
-https://jsonplaceholder.typicode.com
-```
-
-Endpoint demo:
-
-```txt
-GET /posts
-```
-
-### core/permissions/
-
-```txt
-lib/core/permissions/
-└── permission_service.dart
-```
-
-Vai trò:
-
-- Tách logic request permission khỏi UI.
-- Hiện dùng để xin quyền truy cập ảnh/thư viện ảnh trước khi chọn ảnh.
-
-### core/storage/
-
-```txt
-lib/core/storage/
-└── local_storage.dart
-```
-
-Vai trò:
-
-- Bọc `shared_preferences`.
-- Cung cấp hàm `setString`, `getString`, `setBool`, `getBool`, `remove`.
-- Giúp feature không phụ thuộc trực tiếp vào plugin storage.
-
-### core/utils/
-
-```txt
-lib/core/utils/
-├── app_snackbar.dart
-└── validators.dart
-```
-
-Vai trò:
-
-- `app_snackbar.dart`: hiển thị thông báo thành công/lỗi.
-- `validators.dart`: chứa rule validate form như required, email, password.
 
 ## shared/
 
 ```txt
-lib/shared/
-└── widgets/
-    ├── custom_app_bar.dart
-    ├── custom_button.dart
-    ├── custom_text_field.dart
-    ├── empty_view.dart
-    └── loading_view.dart
+lib/shared/widgets/
+├── animated_list_item.dart
+├── custom_app_bar.dart
+├── custom_button.dart
+├── custom_text_field.dart
+├── empty_view.dart
+├── image_picker_box.dart
+├── no_connection_view.dart
+└── loading_view.dart
 ```
 
-`shared/widgets` chứa các widget dùng lại ở nhiều nơi.
+`image_picker_box.dart` là component chọn ảnh dùng chung. Màn cha chịu trách nhiệm xin quyền và gọi `image_picker`.
 
-### custom_app_bar.dart
+`animated_list_item.dart` là component animation dùng chung cho item trong danh sách.
 
-App bar dùng chung.
-
-Hỗ trợ:
-
-- `title`
-- `actions`
-- `showBackButton`
-
-### custom_button.dart
-
-Button dùng chung.
-
-Hỗ trợ:
-
-- label
-- icon
-- loading
-- disable khi loading
-
-### custom_text_field.dart
-
-Text field dùng chung cho form.
-
-Hỗ trợ:
-
-- controller
-- label
-- hint text
-- validator
-- keyboard type
-- obscure text
-- max lines
-- prefix icon
-
-### empty_view.dart
-
-Widget hiển thị trạng thái không có dữ liệu.
-
-Ví dụ dùng khi danh sách task rỗng.
-
-### loading_view.dart
-
-Widget hiển thị trạng thái đang tải.
-
-Ví dụ dùng khi app đang check session hoặc đang gọi API.
+`no_connection_view.dart` là màn mất mạng dùng chung cho các màn gọi API.
 
 ## features/
 
 ```txt
 lib/features/
+├── account/
 ├── auth/
-└── management/
+├── home/
+├── posts/
+├── settings/
+└── shell/
 ```
-
-`features` chứa code theo từng nhóm chức năng. Đây là cấu trúc phổ biến để project dễ mở rộng.
 
 ## features/auth/
 
@@ -265,243 +131,76 @@ lib/features/auth/
 └── services/
 ```
 
-Feature auth xử lý đăng ký, đăng nhập, đăng xuất và session.
+Auth xử lý:
 
-### auth/models/
-
-```txt
-lib/features/auth/models/
-└── user_model.dart
-```
-
-`UserModel` chứa:
-
-- fullName
-- email
-- password
-
-Ngoài ra có hàm chuyển đổi:
-
-- `toMap`
-- `fromMap`
-- `toJson`
-- `fromJson`
-
-Lưu ý: đây là demo học Flutter nên password đang lưu local để minh họa flow. App thực tế không nên lưu password plain text.
-
-### auth/services/
-
-```txt
-lib/features/auth/services/
-└── auth_service.dart
-```
-
-`AuthService` xử lý nghiệp vụ auth:
-
-- đăng ký user
-- đọc user đã đăng ký
-- login
-- kiểm tra trạng thái login
+- đăng ký qua backend
+- đăng nhập qua backend
+- hiển thị màn chuyển tiếp sau khi đăng nhập thành công
+- lưu token
+- khôi phục session qua `/auth/me`
 - logout
 
-Service này làm việc với `LocalStorage`.
-
-### auth/providers/
+## features/shell/
 
 ```txt
-lib/features/auth/providers/
-└── auth_provider.dart
+lib/features/shell/screens/main_shell_screen.dart
 ```
 
-Đây là phần global state cho auth.
+`MainShellScreen` giữ bottom navigation và dùng `AnimatedSwitcher` để chuyển tab mượt hơn.
 
-Các provider chính:
-
-- `localStorageProvider`
-- `authServiceProvider`
-- `authProvider`
-
-`authProvider` là `StateNotifierProvider<AuthNotifier, AuthState>`.
-
-`AuthState` chứa:
-
-- `isReady`
-- `isLoggedIn`
-- `user`
-
-`AuthNotifier` chứa các action:
-
-- `loadSession`
-- `register`
-- `login`
-- `logout`
-
-### auth/screens/
+## features/home/
 
 ```txt
-lib/features/auth/screens/
-├── login_screen.dart
-├── register_screen.dart
-└── splash_screen.dart
+lib/features/home/screens/home_screen.dart
 ```
 
-Các màn hình:
+Home hiển thị tổng quan bài viết, số post, chart thống kê post có ảnh/không ảnh và lối tắt tạo post.
 
-- `SplashScreen`: chờ đọc session.
-- `RegisterScreen`: form đăng ký, validate, lưu user local.
-- `LoginScreen`: form đăng nhập, validate, kiểm tra user local.
-
-## features/management/
+## features/posts/
 
 ```txt
-lib/features/management/
+lib/features/posts/
 ├── models/
-├── providers/
 ├── repositories/
-├── screens/
-└── widgets/
+└── screens/
 ```
 
-Feature management xử lý màn sau đăng nhập.
+Posts xử lý:
 
-Bao gồm:
+- lấy danh sách post từ backend
+- tạo post mới
+- chọn ảnh cho post
+- xem chi tiết post
 
-- thêm task
-- sửa task
-- xóa task
-- hiển thị list task
-- chọn ảnh có check permission
-- lưu task local
-- gọi API bên thứ ba
+`PostModel` gồm:
 
-### management/models/
+- `id`
+- `title`
+- `body`
+- `imagePath`
+
+`PostRepository` gọi:
 
 ```txt
-lib/features/management/models/
-├── post_model.dart
-└── task_model.dart
+GET  /posts
+POST /posts
 ```
 
-`TaskModel` dùng cho dữ liệu local:
+## features/account/
 
-- id
-- title
-- description
-- imagePath
+Account hiển thị thông tin user, profile, security và logout. Logout dùng modal xác nhận trước khi thoát tài khoản.
 
-`PostModel` dùng cho dữ liệu API:
+## Shared UI Rule
 
-- id
-- title
-- body
+- Toast/message dùng `AppSnackbar.show(...)` để hiển thị ở phía trên màn hình.
+- List item nên dùng `AnimatedListItem` nếu cần hiệu ứng xuất hiện.
+- Lỗi mất mạng dùng `NetworkError.isOffline(...)` + `NoConnectionView`.
+- Component dùng chung đặt trong `shared/widgets/`, không hard code lại ở từng feature.
 
-### management/providers/
+## features/settings/
 
-```txt
-lib/features/management/providers/
-└── task_provider.dart
-```
+Settings xử lý:
 
-Đây là global state cho danh sách task.
-
-`taskProvider` là `StateNotifierProvider<TaskNotifier, List<TaskModel>>`.
-
-`TaskNotifier` chứa các action:
-
-- `loadTasks`
-- `addTask`
-- `updateTask`
-- `deleteTask`
-- `_save`
-
-Sau mỗi action thêm/sửa/xóa, danh sách task được lưu lại vào local storage.
-
-### management/repositories/
-
-```txt
-lib/features/management/repositories/
-└── post_repository.dart
-```
-
-Repository gọi API bên thứ ba.
-
-Các provider:
-
-- `apiClientProvider`
-- `postRepositoryProvider`
-- `postsProvider`
-
-`postsProvider` là `FutureProvider<List<PostModel>>`, dùng để quản lý trạng thái:
-
-- loading
-- data
-- error
-
-### management/screens/
-
-```txt
-lib/features/management/screens/
-└── management_screen.dart
-```
-
-Màn quản lý chính.
-
-Nhiệm vụ:
-
-- đọc user từ `authProvider`
-- đọc task từ `taskProvider`
-- đọc post API từ `postsProvider`
-- thêm task
-- sửa task bằng bottom sheet
-- xóa task
-- chọn ảnh sau khi check permission
-- logout
-- refresh API
-
-### management/widgets/
-
-```txt
-lib/features/management/widgets/
-├── image_picker_box.dart
-├── task_form.dart
-└── task_item.dart
-```
-
-Các widget riêng của feature management:
-
-- `TaskForm`: form thêm/sửa task.
-- `TaskItem`: hiển thị một item trong list task.
-- `ImagePickerBox`: nút chọn ảnh.
-
-## Platform Folders
-
-Ngoài `lib`, project còn có các thư mục platform do Flutter tạo:
-
-```txt
-android/
-ios/
-web/
-macos/
-linux/
-windows/
-```
-
-Trong demo này có chỉnh:
-
-- `android/app/src/main/AndroidManifest.xml`: thêm quyền đọc ảnh.
-- `ios/Runner/Info.plist`: thêm mô tả quyền truy cập thư viện ảnh.
-
-## Tóm Tắt Cách Đọc Code
-
-Nên đọc theo thứ tự:
-
-1. `lib/main.dart`
-2. `lib/app/app.dart`
-3. `lib/app/router.dart`
-4. `lib/features/auth/providers/auth_provider.dart`
-5. `lib/features/auth/services/auth_service.dart`
-6. `lib/features/auth/screens/register_screen.dart`
-7. `lib/features/auth/screens/login_screen.dart`
-8. `lib/features/management/screens/management_screen.dart`
-9. `lib/features/management/providers/task_provider.dart`
-10. `lib/features/management/repositories/post_repository.dart`
+- theme: system, light, dark
+- language: vi, en
+- lưu lựa chọn vào local storage

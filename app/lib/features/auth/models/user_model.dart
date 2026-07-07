@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-/// Model biểu diễn user trong app demo.
-/// Vì demo không có backend auth thật, password được lưu local để minh họa luồng đăng ký/đăng nhập.
-/// Trong app thật, không nên lưu password dạng plain text ở local storage.
+/// Model biểu diễn user trong app.
+/// Password chỉ dùng để cache tài khoản demo gần nhất cho màn login tự điền.
 class UserModel {
   const UserModel({
     required this.fullName,
@@ -44,7 +43,25 @@ class UserModel {
     return UserModel(
       fullName: map['fullName'] as String,
       email: map['email'] as String,
-      password: map['password'] as String,
+      password: map['password'] as String? ?? '',
+      gender: map['gender'] as String? ?? '',
+      hobbies: (map['hobbies'] as List<dynamic>? ?? [])
+          .map((item) => item as String)
+          .toList(),
+      birthDate:
+          DateTime.tryParse(map['birthDate'] as String? ?? '') ??
+          DateTime(2000),
+      city: map['city'] as String? ?? '',
+      acceptedTerms: map['acceptedTerms'] as bool? ?? false,
+    );
+  }
+
+  /// Tạo user từ response backend.
+  factory UserModel.fromApi(Map<String, dynamic> map, {String password = ''}) {
+    return UserModel(
+      fullName: map['fullName'] as String? ?? '',
+      email: map['email'] as String? ?? '',
+      password: password,
       gender: map['gender'] as String? ?? '',
       hobbies: (map['hobbies'] as List<dynamic>? ?? [])
           .map((item) => item as String)

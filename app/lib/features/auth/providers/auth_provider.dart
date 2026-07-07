@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/api_client.dart';
 import '../../../core/storage/local_storage.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
@@ -11,7 +12,10 @@ final localStorageProvider = Provider<LocalStorage>((ref) => LocalStorage());
 /// Provider tạo AuthService.
 /// AuthService phụ thuộc LocalStorage, nên lấy storage từ localStorageProvider.
 final authServiceProvider = Provider<AuthService>((ref) {
-  return AuthService(ref.watch(localStorageProvider));
+  return AuthService(
+    ref.watch(localStorageProvider),
+    ref.watch(apiClientProvider),
+  );
 });
 
 /// Global auth state của toàn app.
@@ -64,7 +68,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Sau khi load xong, isReady = true để router bắt đầu redirect.
   Future<void> loadSession() async {
     final isLoggedIn = await _authService.isLoggedIn();
-    final user = await _authService.getRegisteredUser();
+    final user = isLoggedIn
+        ? await _authService.getCurrentUser()
+        : await _authService.getRegisteredUser();
 
     state = AuthState(
       isReady: true,

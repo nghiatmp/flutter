@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Widget hiển thị trạng thái rỗng.
-/// Ví dụ: danh sách task chưa có dữ liệu.
+/// Ví dụ: danh sách post chưa có dữ liệu.
 class EmptyView extends StatelessWidget {
   const EmptyView({
     super.key,

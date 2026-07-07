@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../features/settings/providers/settings_provider.dart';
 import 'router.dart';
 import 'theme.dart';
 
@@ -12,6 +14,7 @@ class StudyFlutterApp extends ConsumerWidget {
     /// Đọc router từ Riverpod để router có thể tự phản ứng theo auth state.
     /// Khi trạng thái đăng nhập đổi, router sẽ kiểm tra redirect lại.
     final router = ref.watch(appRouterProvider);
+    final settings = ref.watch(settingsProvider);
 
     /// MaterialApp.router dùng cho app có route phức tạp hơn home screen đơn giản.
     /// Ở đây go_router quản lý các màn: splash, đăng ký, đăng nhập, quản lý.
@@ -19,6 +22,15 @@ class StudyFlutterApp extends ConsumerWidget {
       title: 'Study Flutter',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
+      darkTheme: buildAppTheme(brightness: Brightness.dark),
+      themeMode: settings.themeMode,
+      locale: settings.locale,
+      supportedLocales: const [Locale('vi'), Locale('en')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
       routerConfig: router,
     );
   }

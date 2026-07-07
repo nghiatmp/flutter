@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/localization/app_strings.dart';
 import '../../../core/utils/app_snackbar.dart';
 import '../../../core/utils/validators.dart';
 import '../../../shared/widgets/custom_button.dart';
@@ -89,10 +90,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (!mounted) return;
 
       /// Bước 5: báo thành công và điều hướng sang màn đăng nhập.
-      AppSnackbar.show(context, 'Đăng ký thành công. Hãy đăng nhập.');
+      AppSnackbar.show(context, ref.read(appStringsProvider).registerSuccess);
       context.go('/login');
     } catch (error) {
-      /// Nếu có lỗi bất ngờ, hiển thị SnackBar lỗi cho người dùng.
+      /// Nếu có lỗi bất ngờ, hiển thị toast lỗi cho người dùng.
       if (!mounted) return;
       AppSnackbar.show(context, error.toString(), isError: true);
     } finally {

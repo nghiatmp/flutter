@@ -40,6 +40,7 @@ export class PostsService {
       userId,
       title,
       body: content,
+      imagePath: body.imagePath ?? null,
       createdAt: now,
       updatedAt: now,
     };
@@ -63,6 +64,8 @@ export class PostsService {
       ...current,
       title: body.title?.trim() ?? current.title,
       body: body.body?.trim() ?? current.body,
+      imagePath:
+        body.imagePath === undefined ? current.imagePath : body.imagePath,
       updatedAt: new Date().toISOString(),
     };
 

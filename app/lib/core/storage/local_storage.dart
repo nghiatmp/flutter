@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// giúp code dễ test và sau này có thể đổi sang storage khác.
 class LocalStorage {
   /// Lưu chuỗi vào local storage.
-  /// Dùng cho dữ liệu JSON như user hoặc danh sách task.
+  /// Dùng cho dữ liệu JSON như user cache.
   Future<void> setString(String key, String value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(key, value);
