@@ -11,9 +11,11 @@ import { DatabaseService } from "../database/database.service";
 import { UserRecord } from "../database/database.types";
 import {
   AuthResponse,
+  ChangePasswordBody,
   LoginBody,
   PublicUser,
   RegisterBody,
+  UpdateProfileBody,
 } from "./auth.types";
 
 /// Tài khoản demo có sẵn để app Flutter tự điền form login khi mới cài.
@@ -106,6 +108,54 @@ export class AuthService implements OnModuleInit {
     }
 
     return this.createAuthResponse(user);
+  }
+
+  async updateProfile(
+    userId: string,
+    body: UpdateProfileBody,
+  ): Promise<PublicUser> {
+    const data = this.database.snapshot;
+    const index = data.users.findIndex((user) => user.id === userId);
+    if (index === -1) throw new UnauthorizedException("Bạn cần đăng nhập");
+
+    if (!body.fullName?.trim())
+      throw new BadRequestException("Họ tên là bắt buộc");
+
+    const current = data.users[index];
+    const updated: UserRecord = {
+      ...current,
+      fullName: body.fullName.trim(),
+      gender: body.gender?.trim() ?? current.gender,
+      hobbies: Array.isArray(body.hobbies) ? body.hobbies : current.hobbies,
+      birthDate: body.birthDate ?? current.birthDate,
+      city: body.city?.trim() ?? current.city,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const users = [...data.users];
+    users[index] = updated;
+    await this.database.save({ ...data, users });
+
+    return this.toPublicUser(updated);
+  }
+
+  async changePassword(userId: string, body: ChangePasswordBody) {
+    const data = this.database.snapshot;
+    const index = data.users.findIndex((user) => user.id === userId);
+    if (index === -1) throw new UnauthorizedException("Bạn cần đăng nhập");
+
+    const current = data.users[index];
+    if (!this.crypto.verifyPassword(body.currentPassword, current.passwordHash)) {
+      throw new UnauthorizedException("Mật khẩu hiện tại không đúng");
+    }
+
+    const users = [...data.users];
+    users[index] = {
+      ...current,
+      passwordHash: this.crypto.hashPassword(body.newPassword),
+      updatedAt: new Date().toISOString(),
+    };
+    await this.database.save({ ...data, users });
   }
 
   findPublicUserById(userId: string): PublicUser | null {

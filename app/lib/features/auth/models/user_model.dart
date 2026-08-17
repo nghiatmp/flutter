@@ -23,6 +23,26 @@ class UserModel {
   final String city;
   final bool acceptedTerms;
 
+  /// Tạo bản sao với vài field thay đổi, dùng sau khi cập nhật hồ sơ thành công.
+  UserModel copyWith({
+    String? fullName,
+    String? gender,
+    List<String>? hobbies,
+    DateTime? birthDate,
+    String? city,
+  }) {
+    return UserModel(
+      fullName: fullName ?? this.fullName,
+      email: email,
+      password: password,
+      gender: gender ?? this.gender,
+      hobbies: hobbies ?? this.hobbies,
+      birthDate: birthDate ?? this.birthDate,
+      city: city ?? this.city,
+      acceptedTerms: acceptedTerms,
+    );
+  }
+
   /// Chuyển object UserModel thành Map để dễ encode sang JSON.
   Map<String, dynamic> toMap() {
     return {

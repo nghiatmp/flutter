@@ -95,6 +95,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isReady: true, isLoggedIn: true, user: user);
   }
 
+  /// Cập nhật hồ sơ và đồng bộ lại user trong state để mọi màn hình
+  /// (Home, Account...) hiển thị thông tin mới ngay lập tức.
+  Future<void> updateProfile(UserModel user) async {
+    final updated = await _authService.updateProfile(user);
+    state = state.copyWith(user: updated);
+  }
+
   /// Đăng xuất:
   /// 1. Xóa flag đăng nhập trong local storage.
   /// 2. Xóa user khỏi global state.

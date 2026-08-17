@@ -96,6 +96,52 @@ class AuthService {
     }
   }
 
+  /// Cập nhật hồ sơ cá nhân (không gửi email — backend cũng không nhận field này).
+  Future<UserModel> updateProfile(UserModel user) async {
+    final accessToken = await getAccessToken();
+    try {
+      final response = await _apiClient.patch(
+        ApiEndpoints.authMe,
+        data: {
+          'fullName': user.fullName,
+          'gender': user.gender,
+          'hobbies': user.hobbies,
+          'birthDate': user.birthDate.toIso8601String(),
+          'city': user.city,
+        },
+        accessToken: accessToken,
+      );
+      final updated = UserModel.fromApi(
+        response.data as Map<String, dynamic>,
+        password: user.password,
+      );
+      await _cacheUser(updated);
+      return updated;
+    } on DioException catch (error) {
+      throw Exception(_readErrorMessage(error));
+    }
+  }
+
+  /// Đổi mật khẩu: backend tự kiểm tra currentPassword trước khi cho đổi.
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final accessToken = await getAccessToken();
+    try {
+      await _apiClient.post(
+        ApiEndpoints.authChangePassword,
+        data: {
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        },
+        accessToken: accessToken,
+      );
+    } on DioException catch (error) {
+      throw Exception(_readErrorMessage(error));
+    }
+  }
+
   /// Logout chỉ cần đặt isLoggedIn = false.
   /// User gần nhất vẫn được giữ lại để form login tự điền.
   Future<void> logout() async {

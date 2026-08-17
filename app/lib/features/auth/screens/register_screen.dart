@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/profile_options.dart';
 import '../../../core/localization/app_strings.dart';
 import '../../../core/utils/app_snackbar.dart';
 import '../../../core/utils/validators.dart';
@@ -33,15 +34,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-
-  final _genderOptions = const ['Nam', 'Nữ', 'Khác'];
-  final _hobbyOptions = const ['Đọc sách', 'Thể thao', 'Âm nhạc', 'Du lịch'];
-  final _cityOptions = const [
-    'Hà Nội',
-    'Đà Nẵng',
-    'TP. Hồ Chí Minh',
-    'Cần Thơ',
-  ];
 
   String? _selectedGender;
   final Set<String> _selectedHobbies = {};
@@ -178,7 +170,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     const SizedBox(height: 14),
                     CustomRadioGroupField<String>(
                       label: 'Giới tính',
-                      options: _genderOptions,
+                      options: ProfileOptions.genders,
                       value: _selectedGender,
                       optionLabelBuilder: (gender) => gender,
                       onChanged: (value) {
@@ -194,7 +186,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     const SizedBox(height: 14),
                     CustomCheckboxGroupField<String>(
                       label: 'Sở thích',
-                      options: _hobbyOptions,
+                      options: ProfileOptions.hobbies,
                       selectedValues: _selectedHobbies,
                       optionLabelBuilder: (hobby) => hobby,
                       onChanged: (values) {
@@ -233,7 +225,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     const SizedBox(height: 14),
                     CustomDropdownField<String>(
                       label: 'Thành phố',
-                      options: _cityOptions,
+                      options: ProfileOptions.cities,
                       value: _selectedCity,
                       optionLabelBuilder: (city) => city,
                       prefixIcon: Icons.location_city_outlined,

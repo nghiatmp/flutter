@@ -109,4 +109,20 @@ class AppStrings {
       : 'Đăng ký thành công. Hãy đăng nhập.';
   String get goRegister =>
       isEnglish ? 'No account? Register' : 'Chưa có tài khoản? Đăng ký';
+  String get birthDate => isEnglish ? 'Date of birth' : 'Ngày sinh';
+  String get saveChanges => isEnglish ? 'Save changes' : 'Lưu thay đổi';
+  String get profileUpdated =>
+      isEnglish ? 'Profile updated.' : 'Đã cập nhật hồ sơ.';
+  String get emailLocked => isEnglish
+      ? 'Email cannot be changed.'
+      : 'Không thể thay đổi email.';
+  String get changePassword =>
+      isEnglish ? 'Change password' : 'Đổi mật khẩu';
+  String get currentPassword =>
+      isEnglish ? 'Current password' : 'Mật khẩu hiện tại';
+  String get newPassword => isEnglish ? 'New password' : 'Mật khẩu mới';
+  String get confirmNewPassword =>
+      isEnglish ? 'Confirm new password' : 'Xác nhận mật khẩu mới';
+  String get passwordChanged =>
+      isEnglish ? 'Password changed.' : 'Đã đổi mật khẩu.';
 }

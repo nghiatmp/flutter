@@ -137,7 +137,12 @@ ThemeData buildAppTheme({Brightness brightness = Brightness.light}) {
       style: ElevatedButton.styleFrom(
         backgroundColor: primary,
         foregroundColor: Colors.white,
-        minimumSize: const Size.fromHeight(52),
+
+        /// Chỉ ép chiều cao, không ép chiều rộng (Size.fromHeight sẽ set
+        /// width = infinity, phá layout của bất kỳ ElevatedButton nào không
+        /// nằm trong Column co giãn — kể cả nút nội bộ của package khác
+        /// như Chucker).
+        minimumSize: const Size(64, 52),
         elevation: 1,
         shadowColor: primary.withValues(alpha: 0.35),
         shape: RoundedRectangleBorder(
@@ -152,7 +157,7 @@ ThemeData buildAppTheme({Brightness brightness = Brightness.light}) {
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: primary,
-        minimumSize: const Size.fromHeight(52),
+        minimumSize: const Size(64, 52),
         side: BorderSide(color: outline),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusButton),
