@@ -2,6 +2,8 @@
 
 Backend cung cấp API auth và post cho Flutter app.
 
+> 📚 Tài liệu chi tiết (luồng request, DI, bảo mật, rủi ro): [docs/README.md](docs/README.md)
+
 ## Tổng Quan
 
 ```txt
